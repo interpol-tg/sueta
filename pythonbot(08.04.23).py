@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
 import feedparser
-import requests
+import validators #новый импорт
 import time
 import json
 import os
@@ -20,7 +20,7 @@ if os.path.exists(tracked_podcasts_file):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard = True)
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True) #изменение размера кнопок
     itembtn1 = types.KeyboardButton('Найти выпуски подкаста')
     itembtn2 = types.KeyboardButton('Мои подкасты')
     itembtn3 = types.KeyboardButton('Добавить подкаст')
@@ -31,22 +31,26 @@ def send_welcome(message):
 @bot.message_handler(func=lambda message: message.text == 'Найти выпуски подкаста')
 def find_podcasts(message):
     msg = bot.send_message(message.chat.id, 'Отправьте ссылку на rss:')
-    check = requests.get(message.text)
-    if check.status_code != 200:
-        bot.send_message('Ссылка недействительна или ошибка в написании')
     bot.register_next_step_handler(msg, get_podcast_links)
 
-
+#изменение
 def get_podcast_links(message):
     url = message.text
-    feed = feedparser.parse(url)
-    episodes = []
+    validations = validators.url(url) #Валидатор для проверки ссылки (08.04.2023, 22:00)
+    if validations:
+        feed = feedparser.parse(url)
+        episodes = []
 
-    for entry in feed.entries:
-        episodes.append({'title': entry.title, 'link': entry.enclosures[0].href})
+        for entry in feed.entries:
+            episodes.append({'title': entry.title, 'link': entry.enclosures[0].href})
 
-    user_rss[message.chat.id] = episodes
-    send_inline_keyboard(message)
+        if len(episodes): #проверка на наличие выпусков в подкасте
+            user_rss[message.chat.id] = episodes
+            send_inline_keyboard(message)
+        else:
+            bot.send_message(message.chat.id, "Выпуски не найдены")
+    else:
+        bot.send_message(message.chat.id, 'Некоректная ссылка')
 
 
 def send_inline_keyboard(message, page=0, edit=False):
@@ -149,3 +153,4 @@ def save_notifications():
 
 
 bot.polling(non_stop=True)
+
