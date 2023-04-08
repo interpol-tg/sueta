@@ -6,7 +6,7 @@ import time
 import json
 import os
 
-TOKEN = '5853299958:AAE72vOgCbP0cXcblndUHu2wZ-nSvmTdNQE'
+TOKEN = '6234035704:AAFnKMchmh0IRp3LWxRGhuiJuNFlIYKWk2Q'
 bot = telebot.TeleBot(TOKEN)
 
 user_rss = {}
