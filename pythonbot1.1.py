@@ -19,7 +19,7 @@ if os.path.exists(tracked_podcasts_file):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2, , resize_keyboard = True) #Изменен размер кнопок 
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard = True) #Изменен размер кнопок 
     itembtn1 = types.KeyboardButton('Найти выпуски подкаста')
     itembtn2 = types.KeyboardButton('Мои подкасты')
     itembtn3 = types.KeyboardButton('Добавить подкаст')
